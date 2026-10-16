@@ -1,19 +1,44 @@
 import sqlite3
+import sys
 
-def inicializar_base_de_datos():
-    conexion = sqlite3.connect("productividad_estudiante.db")
+# Evita UnicodeEncodeError al imprimir emojis en consolas Windows (cp1252)
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
+NOMBRE_BD = "productividad_estudiante.db"
+
+
+def conectar():
+    """Abre una conexion a la base de datos asegurando que la tabla existe.
+
+    Devuelve la conexion lista para usarse. Centralizar aqui la creacion de
+    la tabla evita el error 'no such table' si se ejecuta otro script antes
+    de inicializar la base de datos.
+    """
+    conexion = sqlite3.connect(NOMBRE_BD)
     conexion.execute("PRAGMA foreign_keys = ON;")
-    cursor = conexion.cursor()
-    #Creacion de la base de datos
-    cursor.execute('''
+    # Creacion de la base de datos
+    conexion.execute('''
         CREATE TABLE IF NOT EXISTS sesiones_estudio(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             fecha DATE DEFAULT CURRENT_DATE,
-            asignatura VARCHAR(10) NOT NULL,
-            horas_estudio REAL CHECK(horas_estudio>=0 AND horas_estudio<=16),
+            asignatura TEXT NOT NULL,
+            horas_estudio REAL CHECK(horas_estudio >= 0 AND horas_estudio <= 16),
             nivel_concentracion INTEGER CHECK(nivel_concentracion BETWEEN 1 AND 10),
             horas_sueno REAL CHECK(horas_sueno >= 0 AND horas_sueno <= 24),
-            hizo_ejercicio INT CHECK(hizo_ejercicio IN (0,1));
-            puntuacion_test REAL CHECK(puntuacion_test >= 0 AND puntuacion_test <=100);
+            hizo_ejercicio INTEGER CHECK(hizo_ejercicio IN (0, 1)),
+            puntuacion_test REAL CHECK(puntuacion_test >= 0 AND puntuacion_test <= 100)
         )
     ''')
+    conexion.commit()
+    return conexion
+
+
+def inicializar_base_de_datos():
+    conexion = conectar()
+    conexion.close()
+    print(f"✅ Base de datos '{NOMBRE_BD}' lista.")
+
+
+if __name__ == "__main__":
+    inicializar_base_de_datos()

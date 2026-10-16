@@ -1,0 +1,9 @@
+# Base de datos generada localmente
+productividad_estudiante.db
+
+# Modelo entrenado
+modelo_regresion.joblib
+
+# Cache de Python
+__pycache__/
+*.pyc
