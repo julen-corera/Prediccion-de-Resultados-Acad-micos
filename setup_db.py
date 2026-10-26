@@ -27,9 +27,19 @@ def conectar():
             nivel_concentracion INTEGER CHECK(nivel_concentracion BETWEEN 1 AND 10),
             horas_sueno REAL CHECK(horas_sueno >= 0 AND horas_sueno <= 24),
             hizo_ejercicio INTEGER CHECK(hizo_ejercicio IN (0, 1)),
-            puntuacion_test REAL CHECK(puntuacion_test >= 0 AND puntuacion_test <= 100)
+            puntuacion_test REAL CHECK(puntuacion_test >= 0 AND puntuacion_test <= 100),
+            origen TEXT DEFAULT 'manual'
         )
     ''')
+
+    # Migracion para bases de datos creadas antes de existir la columna
+    # 'origen': distingue datos sinteticos de sesiones registradas a mano.
+    columnas = {fila[1] for fila in conexion.execute("PRAGMA table_info(sesiones_estudio)")}
+    if "origen" not in columnas:
+        conexion.execute(
+            "ALTER TABLE sesiones_estudio ADD COLUMN origen TEXT DEFAULT 'manual'"
+        )
+
     conexion.commit()
     return conexion
 

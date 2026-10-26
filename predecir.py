@@ -22,7 +22,7 @@ def main():
     print("--- Prediccion de la puntuacion de un test ---")
     try:
         modelo = cargar_modelo()
-    except FileNotFoundError as e:
+    except (FileNotFoundError, ValueError) as e:
         print(f"❌ {e}")
         return
 
