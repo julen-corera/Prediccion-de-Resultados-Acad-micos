@@ -23,8 +23,16 @@ def main():
 
     print("\n--- Coeficientes aprendidos ---")
     print(f"Intercepto: {modelo.intercept_:+.2f}")
-    for nombre, coef in zip(FEATURES, modelo.coef_):
-        print(f"  {nombre:20s}: {coef:+.2f}")
+    coefs = dict(zip(FEATURES, modelo.coef_))
+    for nombre in FEATURES:
+        print(f"  {nombre:22s}: {coefs[nombre]:+.3f}")
+
+    pendiente = coefs.get("horas_sueno")
+    curvatura = coefs.get("horas_sueno_cuadrado")
+    if pendiente is not None and curvatura is not None and curvatura < 0:
+        optimo = -pendiente / (2 * curvatura)
+        print(f"\nOptimo estimado de sueno: {optimo:.1f} h/dia")
+        print("(a partir de ahi, cada hora extra de sueno resta nota)")
 
     guardar_modelo(modelo)
     print("\n✅ Modelo guardado en 'modelo_regresion.joblib'")

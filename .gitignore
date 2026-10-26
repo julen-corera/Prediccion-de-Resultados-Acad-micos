@@ -1,5 +1,6 @@
 # Base de datos generada localmente
 productividad_estudiante.db
+productividad_estudiante.db.bak
 
 # Modelo entrenado
 modelo_regresion.joblib
